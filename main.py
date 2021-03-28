@@ -23,6 +23,5 @@ async def on_ready():
     await client.change_presence(activity=game)
     await client.get_channel(792704016697917464).send('내가 돌아왔다.')
 
-init()
 
 client.run(token)
