@@ -4,6 +4,7 @@ from selenium.webdriver.common.keys import Keys
 import time
 import random
 import openpyxl
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -16,7 +17,7 @@ options.add_argument('window-size=1920x1080')
 options.add_argument(
     'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36')
 options.add_argument("--disable-gpu")
-driver = webdriver.Chrome(options=options)
+driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 driver.maximize_window()
 driver.get(url)
 
