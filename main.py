@@ -5,6 +5,9 @@ import datetime
 import time
 from bs4 import BeautifulSoup
 import requests
+from urllib.request import urlopen, Request
+import urllib
+import urllib.request
 
 client = discord.Client()
 game = discord.Game("인간들에게 복수를 준비")
@@ -65,6 +68,57 @@ async def on_message(message):
         for news in headline:
             link = url + news.find('a')['href']
             await message.channel.send(link)
+
+    # ============= 날 씨 ===============
+
+    if message.content.startswith("$날씨"):
+        try:
+            search = message.content.split("/")
+            loca = search[1]
+            search_loca = urllib.parse.quote(loca + "날씨")
+            url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=1&ie=utf8&query=" + search_loca
+            soup = create_soup(url)
+            cast = soup.find(
+                'p', attrs={'class': 'cast_txt'}).get_text().replace('아요', '')
+            curr_temp = soup.find(
+                'p', attrs={'class': 'info_temperature'}).get_text().replace('도씨', '')
+            min_temp = soup.find('span', attrs={'class': 'min'}).get_text()
+            max_temp = soup.find('span', attrs={'class': 'max'}).get_text()
+
+            morning_rain_rate = soup.find(
+                'span', attrs={'class': 'point_time morning'}).get_text().strip()
+            afternoon_rain_rate = soup.find(
+                'span', attrs={'class': 'point_time afternoon'}).get_text().strip()
+
+            dust = soup.find('dl', attrs={'class': 'indicator'})
+            pm10 = dust.find_all('dd')[0].get_text()
+            pm25 = dust.find_all('dd')[1].get_text()
+
+            embed = discord.Embed(
+                title=f'현재 {loca} 날씨 입니다.',
+                description='=====================',
+                colour=discord.Colour.gold()
+            )
+            embed.add_field(
+                name='현재온도', value=f'현재 {curr_temp} (최저 {min_temp} / 최고 {max_temp})\n{cast}습니다.', inline=False)
+            embed.add_field(
+                name='강수확률', value=f'오전 {morning_rain_rate}\n오후 {afternoon_rain_rate}', inline=False)
+            embed.add_field(name='미세먼지', value=f'{pm10}\n{pm25}')
+            await message.channel.send(embed=embed)
+        except IndexError:
+            embed = discord.Embed(
+                title="에러!! 지역을 입력해주세요!!",
+                description="혹시 $날씨 만 입력하셨거나 /를 입력안하신건 아닌가요?\nex)$날씨/부산 이라고 입력해보세요!",
+                colour=discord.Colour.red()
+            )
+            await message.channel.send(embed=embed)
+        except AttributeError:
+            embed = discord.Embed(
+                title="에러!! 정확한 지명을 입력해주세요!!",
+                description="정확한 지명을 입력해주세요!!\nex)$날씨/부산명지 ❌ $날씨/부산명지동 ⭕",
+                colour=discord.Colour.red()
+            )
+            await message.channel.send(embed=embed)
 
     # ============= 포켓몬 뉴스 ===============
 
