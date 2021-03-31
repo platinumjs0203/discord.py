@@ -1,6 +1,7 @@
 import discord
 import os
 import asyncio
+import random
 import datetime
 import time
 from bs4 import BeautifulSoup
@@ -8,6 +9,9 @@ import requests
 from urllib.request import urlopen, Request
 import urllib
 import urllib.request
+from openpyxl import load_workbook
+
+from discord.ext.commands import Bot
 
 client = discord.Client()
 game = discord.Game("인간들에게 복수를 준비")
@@ -40,7 +44,7 @@ async def on_ready():
     print(client.user.name)
     print("----------------------")
     await client.change_presence(activity=game)
-    await client.get_channel(792704016697917464).send('내가 돌아왔다.')
+    await client.get_channel(792704016697917462).send('내가 돌아왔다.')
 
 
 @client.event
@@ -130,6 +134,37 @@ async def on_message(message):
         for i in poke_news:
             link = url + i.find('a')['href']
             await message.channel.send(link)
+
+    # ============= 랜덤 고양이 ===============
+
+    if message.content.startswith("$짤"):
+        wb = load_workbook('cat_image.xlsx')
+        ws = wb['Sheet1']
+        random_url = range(0, 1474)
+        random_img = random.choice(random_url)
+        zzal = ws[f'A{random_img}'].value
+        embed = discord.Embed(
+            title='귀여운 고양이를 드리겠읍니다 ~ 😻', colour=discord.Colour.red())
+        await message.channel.send(embed=embed)
+        await message.channel.send(zzal)
+
+    # ============== 비트코인 ==============
+    if message.content.startswith('$비트코인'):
+
+        while True:
+            url = 'https://www.bithumb.com/'
+            soup = create_soup(url)
+            bitcoin = soup.find(
+                'strong', attrs={'id': 'assetRealBTC_KRW'}).get_text()
+            bc_y = soup.find('strong', attrs={
+                'id': 'assetRealPriceBTC_KRW'}).get_text()
+            embed = discord.Embed(
+                title=f"현재 비트코인 가격은 {bitcoin} 입니다.",
+                description=f"전일대비 {bc_y} 입니다.",
+                colour=discord.Colour.gold()
+            )
+            await message.channel.send(embed=embed)
+            await asyncio.sleep(300)
 
 
 client.run(token)
