@@ -149,7 +149,7 @@ async def on_message(message):
         await message.channel.send(zzal)
 
     # ============== 비트코인 ==============
-    if message.content.startswith('$비트코인'):
+    if message.content.startswith("$비트코인"):
 
         while True:
             url = 'https://www.bithumb.com/'
@@ -165,6 +165,31 @@ async def on_message(message):
             )
             await message.channel.send(embed=embed)
             await asyncio.sleep(300)
+
+    # ============== 로또번호 생성기 ==============
+    if message.content.startswith("$로또"):
+        try:
+            search = message.content.split("/")
+            loca = search[1]
+            if 0 < int(loca) <= 5:
+                await message.channel.send(f"로또 {loca},000원치 구매하셨습니다!!")
+                i = 0
+                while i < int(loca):
+                    lotto = random.sample(range(1, 46), 6)
+                    lotto.sort()
+                    await message.channel.send(lotto)
+                    i += 1
+                await message.channel.send("당신은 이미 당첨되셨습니다. 😉")
+            elif int(loca) > 5:
+                await message.channel.send("사장님 도박은 재미로 하셔야합니다 😉")
+            elif int(loca) == 0:
+                await message.channel.send("로또를 사지않으면 로또에 당첨되지 않는다.\n-빌게이츠-")
+            else:
+                await message.channel.send("에러")
+        except ValueError:
+            await message.channel.send("숫자를 입력해주세요 😅")
+        except IndexError:
+            await message.channel.send("얼마치를 사실건가요?? ex) $로또/5")
 
 
 client.run(token)
