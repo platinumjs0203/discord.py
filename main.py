@@ -1,4 +1,5 @@
 import discord
+from discord.ext import commands
 import os
 import asyncio
 import random
@@ -44,7 +45,7 @@ async def on_ready():
     print(client.user.name)
     print("----------------------")
     await client.change_presence(activity=game)
-    await client.get_channel(792704016697917462).send('내가 돌아왔다.')
+    await client.get_channel(792704016697917462).send('Discord_bot Ready 메세지를 청소합니다.')
 
 
 @client.event
@@ -190,6 +191,11 @@ async def on_message(message):
             await message.channel.send("숫자를 입력해주세요 😅")
         except IndexError:
             await message.channel.send("얼마치를 사실건가요?? ex) $로또/5")
+
+    # ============== 자동청소 ==============
+    if message.content.startswith("Discord_bot"):
+        await asyncio.sleep(5)
+        await message.channel.purge(limit=1000)
 
 
 client.run(token)
